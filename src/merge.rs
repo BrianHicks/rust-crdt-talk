@@ -1,5 +1,15 @@
 pub trait Merge {
-    fn merge(self, other: Self) -> Self;
+    fn merge_mut(&mut self, other: Self);
+
+    fn merge(self, other: Self) -> Self
+    where
+        Self: Clone,
+    {
+        let mut new = self.clone();
+        new.merge_mut(other);
+
+        new
+    }
 }
 
 /// Test that a Merge implementation is idempotent (in other words, merging
