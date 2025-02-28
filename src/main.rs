@@ -23,10 +23,11 @@ impl Cli {
     fn run(&self) -> Result<()> {
         let mut replica = self.load_replica().context("could not load replica")?;
 
-        let changed = self
-            .command
-            .run(&mut replica)
-            .context("could not run command")?;
+        let changed = tracing_texray::examine(tracing::info_span!("run")).in_scope(|| {
+            self.command
+                .run(&mut replica)
+                .context("could not run command")
+        })?;
 
         if changed {
             self.store_replica(&replica)
@@ -117,6 +118,8 @@ impl Command {
 }
 
 fn main() {
+    tracing_texray::init();
+
     let cli = Cli::parse();
 
     if let Err(err) = cli.run() {
