@@ -3,6 +3,7 @@ mod replica;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
 use uuid::Uuid;
 
 #[derive(Debug, Parser)]
@@ -10,6 +11,10 @@ use uuid::Uuid;
 struct Cli {
     #[clap(subcommand)]
     command: Command,
+
+    /// Path to the database file
+    #[clap(long, global = true, default_value = "tasks.json")]
+    store_path: PathBuf,
 }
 
 impl Cli {
