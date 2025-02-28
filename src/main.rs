@@ -1,8 +1,9 @@
 mod crdt;
 mod replica;
 
-use anyhow::Result;
+use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
+use replica::Replica;
 use std::path::PathBuf;
 use uuid::Uuid;
 
@@ -21,7 +22,24 @@ impl Cli {
     fn run(&self) -> Result<()> {
         println!("{:#?}", self);
 
+        let replica = self.load_replica().context("could not load replica")?;
+        println!("{:#?}", replica);
+
         Ok(())
+    }
+
+    fn load_replica(&self) -> Result<Replica> {
+        if !self.store_path.exists() {
+            return Ok(Replica::default());
+        }
+
+        let file = std::fs::File::open(&self.store_path)
+            .with_context(|| format!("could not open `{}`", self.store_path.display()))?;
+
+        let replica: Replica = serde_json::from_reader(file)
+            .with_context(|| format!("could not read `{}` as JSON", self.store_path.display()))?;
+
+        Ok(replica)
     }
 }
 

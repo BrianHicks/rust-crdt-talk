@@ -2,7 +2,7 @@ use super::merge::Merge;
 use std::collections::{hash_map::Entry, HashMap};
 use std::hash::Hash;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
 pub struct GMap<K, V>(HashMap<K, V>)
 where
@@ -25,6 +25,16 @@ where
                 }
             }
         }
+    }
+}
+
+impl<K, V> Default for GMap<K, V>
+where
+    K: Hash + Eq,
+    V: Merge,
+{
+    fn default() -> Self {
+        Self(HashMap::default())
     }
 }
 

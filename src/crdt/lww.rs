@@ -1,7 +1,7 @@
 use super::hlc::HybridLogicalClock;
 use super::merge::Merge;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
 pub struct LWWRegister<T> {
     value: T,

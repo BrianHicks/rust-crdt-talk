@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use std::cmp::{Ord, Ordering};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
 pub struct HybridLogicalClock {
     #[cfg_attr(test, proptest(strategy = "timestamp_strategy()"))]

@@ -4,6 +4,7 @@ use crate::crdt::{GMap, Merge};
 use task::Task;
 use uuid::Uuid;
 
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct Replica {
     tasks: GMap<Uuid, Task>,
 }

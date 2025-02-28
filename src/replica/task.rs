@@ -1,6 +1,7 @@
 use crate::crdt::{LWWRegister, Merge};
 use chrono::{DateTime, Utc};
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Task {
     pub added: LWWRegister<DateTime<Utc>>,
     pub complete: LWWRegister<bool>,
