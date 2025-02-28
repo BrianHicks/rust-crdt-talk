@@ -1,6 +1,5 @@
 use chrono::{DateTime, Utc};
 use std::cmp::{Ord, Ordering};
-use std::fmt;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -68,11 +67,5 @@ impl Ord for HybridLogicalClock {
 impl PartialOrd for HybridLogicalClock {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
-    }
-}
-
-impl fmt::Display for HybridLogicalClock {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}::{}::{}", self.timestamp, self.counter, self.node_id)
     }
 }
