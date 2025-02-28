@@ -9,6 +9,16 @@ where
     K: Hash + Eq,
     V: Merge;
 
+impl<K, V> GMap<K, V>
+where
+    K: Hash + Eq,
+    V: Merge,
+{
+    pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        self.0.iter()
+    }
+}
+
 impl<K, V> Merge for GMap<K, V>
 where
     K: Hash + Eq,

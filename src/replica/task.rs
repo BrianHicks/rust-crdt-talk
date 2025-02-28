@@ -15,3 +15,12 @@ impl Merge for Task {
         self.description.merge_mut(other.description);
     }
 }
+
+use std::fmt;
+
+impl fmt::Display for Task {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let status = if *self.complete.value() { "[x]" } else { "[ ]" };
+        write!(f, "{} {}", status, self.description.value())
+    }
+}

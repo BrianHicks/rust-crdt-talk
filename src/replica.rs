@@ -6,7 +6,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct Replica {
-    tasks: GMap<Uuid, Task>,
+    pub tasks: GMap<Uuid, Task>,
 }
 
 impl Merge for Replica {

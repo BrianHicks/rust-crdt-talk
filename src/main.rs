@@ -87,7 +87,16 @@ enum Command {
 
 impl Command {
     fn run(&self, replica: &mut Replica) -> Result<bool> {
-        Ok(false)
+        match self {
+            Self::List => {
+                for (_, task) in replica.tasks.iter() {
+                    println!("{}", task);
+                }
+
+                Ok(false)
+            }
+            _ => anyhow::bail!("Unimplemented"),
+        }
     }
 }
 
