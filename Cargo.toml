@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+chrono = "0.4.40"
+uuid = "1.15.1"
 
 [dev-dependencies]
 proptest = "1.6.0"
