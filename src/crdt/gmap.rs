@@ -18,6 +18,7 @@ where
         self.0.iter()
     }
 
+    #[tracing::instrument(skip(self, key, value))]
     pub fn insert(&mut self, key: K, value: V) {
         match self.0.entry(key) {
             Entry::Occupied(mut existing) => {

@@ -18,6 +18,7 @@ impl Replica {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     pub fn add_task(&mut self, description: String) -> Uuid {
         let id = Uuid::new_v4();
 
@@ -27,6 +28,7 @@ impl Replica {
         id
     }
 
+    #[tracing::instrument(skip(self))]
     fn next_clock(&self) -> HybridLogicalClock {
         let existing_clock = self
             .tasks
