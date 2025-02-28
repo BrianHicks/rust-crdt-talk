@@ -7,13 +7,18 @@ use uuid::Uuid;
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Replica {
     pub id: Uuid,
+    pub clock: HybridLogicalClock,
     pub tasks: GMap<Uuid, Task>,
 }
 
 impl Replica {
     pub fn new() -> Self {
+        let id = Uuid::new_v4();
+        let clock = HybridLogicalClock::new(id);
+
         Self {
-            id: Uuid::new_v4(),
+            id,
+            clock,
             tasks: GMap::default(),
         }
     }
@@ -21,29 +26,18 @@ impl Replica {
     #[tracing::instrument(skip(self))]
     pub fn add_task(&mut self, description: String) -> Uuid {
         let id = Uuid::new_v4();
+        let next_clock = self.next_clock();
 
-        self.tasks
-            .insert(id, Task::new(description, self.next_clock()));
+        self.tasks.insert(id, Task::new(description, next_clock));
 
         id
     }
 
     #[tracing::instrument(skip(self))]
-    fn next_clock(&self) -> HybridLogicalClock {
-        let existing_clock = self
-            .tasks
-            .iter()
-            .map(|(_, task)| task.highest_clock())
-            .max();
+    fn next_clock(&mut self) -> HybridLogicalClock {
+        self.clock.tick();
 
-        let next_clock = match existing_clock {
-            Some(clock) => HybridLogicalClock::new(self.id).max(clock.next()),
-            None => HybridLogicalClock::new(self.id),
-        };
-
-        next_clock.claim(self.id);
-
-        next_clock
+        self.clock
     }
 }
 
