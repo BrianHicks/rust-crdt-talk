@@ -1,11 +1,19 @@
 use crate::merge::Merge;
 use std::collections::{hash_map::Entry, HashMap};
+use std::hash::Hash;
 
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
-pub struct GMap<T: Merge>(HashMap<String, T>);
+pub struct GMap<K, V>(HashMap<K, V>)
+where
+    K: Hash + Eq,
+    V: Merge;
 
-impl<T: Merge> Merge for GMap<T> {
+impl<K, V> Merge for GMap<K, V>
+where
+    K: Hash + Eq,
+    V: Merge,
+{
     fn merge_mut(&mut self, other: Self) {
         for (key, value) in other.0 {
             match self.0.entry(key) {
@@ -23,28 +31,27 @@ impl<T: Merge> Merge for GMap<T> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::gset::GSet;
-    use crate::merge::{test_associative, test_commutative, test_idempotent};
+    use crate::lww::LWWRegister;
     use proptest::proptest;
 
     proptest! {
         #[test]
-        fn merge_idempotent(v: GMap<GSet<bool>>) {
-            test_idempotent(v);
+        fn merge_idempotent(v: GMap<bool, LWWRegister<bool>>) {
+            crate::merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
-        fn merge_commutative(a: GMap<GSet<bool>>, b: GMap<GSet<bool>>) {
-            test_commutative(a, b);
+        fn merge_commutative(a: GMap<bool, LWWRegister<bool>>, b: GMap<bool, LWWRegister<bool>>) {
+            crate::merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
-        fn merge_associative(a: GMap<GSet<bool>>, b: GMap<GSet<bool>>, c: GMap<GSet<bool>>) {
-            test_associative(a, b, c);
+        fn merge_associative(a: GMap<bool, LWWRegister<bool>>, b: GMap<bool, LWWRegister<bool>>, c: GMap<bool, LWWRegister<bool>>) {
+            crate::merge::test_associative(a, b, c);
         }
     }
 }
