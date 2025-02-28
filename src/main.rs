@@ -20,10 +20,17 @@ struct Cli {
 
 impl Cli {
     fn run(&self) -> Result<()> {
-        println!("{:#?}", self);
+        let mut replica = self.load_replica().context("could not load replica")?;
 
-        let replica = self.load_replica().context("could not load replica")?;
-        println!("{:#?}", replica);
+        let changed = self
+            .command
+            .run(&mut replica)
+            .context("could not run command")?;
+
+        if changed {
+            self.store_replica(&replica)
+                .context("could not store replica")?;
+        }
 
         Ok(())
     }
@@ -40,6 +47,16 @@ impl Cli {
             .with_context(|| format!("could not read `{}` as JSON", self.store_path.display()))?;
 
         Ok(replica)
+    }
+
+    fn store_replica(&self, replica: &Replica) -> Result<()> {
+        let file = std::fs::File::create(&self.store_path)
+            .with_context(|| format!("could not create `{}`", self.store_path.display()))?;
+
+        serde_json::to_writer(file, replica)
+            .with_context(|| format!("could not write JSON to `{}`", self.store_path.display()))?;
+
+        Ok(())
     }
 }
 
@@ -66,6 +83,12 @@ enum Command {
         /// Mark as complete (true) or incomplete (false)
         complete: bool,
     },
+}
+
+impl Command {
+    fn run(&self, replica: &mut Replica) -> Result<bool> {
+        Ok(false)
+    }
 }
 
 fn main() {
