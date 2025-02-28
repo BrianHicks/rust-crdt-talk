@@ -35,7 +35,7 @@ impl Replica {
             .max();
 
         let next_clock = match existing_clock {
-            Some(clock) => HybridLogicalClock::new(self.id).max(*clock),
+            Some(clock) => HybridLogicalClock::new(self.id).max(clock.next()),
             None => HybridLogicalClock::new(self.id),
         };
 
