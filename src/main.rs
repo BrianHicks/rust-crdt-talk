@@ -1,8 +1,4 @@
-mod gmap;
-mod gset;
-mod hlc;
-mod lww;
-mod merge;
+mod crdt;
 
 fn main() {
     println!("Hello, world!");

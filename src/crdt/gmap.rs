@@ -1,4 +1,4 @@
-use crate::merge::Merge;
+use super::merge::Merge;
 use std::collections::{hash_map::Entry, HashMap};
 use std::hash::Hash;
 
@@ -30,28 +30,29 @@ where
 
 #[cfg(test)]
 mod test {
+    use super::super::lww::LWWRegister;
+    use super::super::merge;
     use super::*;
-    use crate::lww::LWWRegister;
     use proptest::proptest;
 
     proptest! {
         #[test]
         fn merge_idempotent(v: GMap<bool, LWWRegister<bool>>) {
-            crate::merge::test_idempotent(v);
+            merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
         fn merge_commutative(a: GMap<bool, LWWRegister<bool>>, b: GMap<bool, LWWRegister<bool>>) {
-            crate::merge::test_commutative(a, b);
+            merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
         fn merge_associative(a: GMap<bool, LWWRegister<bool>>, b: GMap<bool, LWWRegister<bool>>, c: GMap<bool, LWWRegister<bool>>) {
-            crate::merge::test_associative(a, b, c);
+            merge::test_associative(a, b, c);
         }
     }
 }

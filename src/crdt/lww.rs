@@ -1,4 +1,5 @@
-use crate::{hlc::HybridLogicalClock, merge::Merge};
+use super::hlc::HybridLogicalClock;
+use super::merge::Merge;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
@@ -35,27 +36,28 @@ where
 
 #[cfg(test)]
 mod test {
+    use super::super::merge;
     use super::*;
     use proptest::proptest;
 
     proptest! {
         #[test]
         fn test_idempotent(v: LWWRegister<bool>) {
-            crate::merge::test_idempotent(v);
+           merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
         fn test_commutative(a: LWWRegister<bool>, b: LWWRegister<bool>) {
-            crate::merge::test_commutative(a, b);
+            merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
         fn test_associative(a: LWWRegister<bool>, b: LWWRegister<bool>, c: LWWRegister<bool>) {
-            crate::merge::test_associative(a, b, c);
+            merge::test_associative(a, b, c);
         }
     }
 }

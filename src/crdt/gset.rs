@@ -1,4 +1,4 @@
-use crate::merge::Merge;
+use super::merge::Merge;
 use std::collections::HashSet;
 use std::hash::Hash;
 
@@ -26,30 +26,28 @@ impl<T: Eq + Hash> Merge for GSet<T> {
 
 #[cfg(test)]
 mod test {
-    use proptest::proptest;
-
-    use crate::merge::{test_associative, test_commutative, test_idempotent};
-
+    use super::super::merge;
     use super::*;
+    use proptest::proptest;
 
     proptest! {
         #[test]
         fn merge_idempotent(v: GSet<bool>) {
-            test_idempotent(v);
+            merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
         fn merge_commutative(a: GSet<bool>, b: GSet<bool>) {
-            test_commutative(a, b);
+            merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
         fn merge_associative(a: GSet<bool>, b: GSet<bool>, c: GSet<bool>) {
-            test_associative(a, b, c);
+            merge::test_associative(a, b, c);
         }
     }
 }
