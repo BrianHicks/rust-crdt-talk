@@ -1,6 +1,6 @@
 mod task;
 
-use crate::crdt::{hlc::HybridLogicalClock, GMap, Merge};
+use crate::crdt::{GMap, HybridLogicalClock, Merge};
 use task::Task;
 use uuid::Uuid;
 
