@@ -3,7 +3,6 @@ mod replica;
 
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use itertools::Itertools;
 use replica::Replica;
 use std::path::PathBuf;
 use uuid::Uuid;
@@ -91,13 +90,8 @@ impl Command {
     fn run(&self, replica: &mut Replica) -> Result<bool> {
         match self {
             Self::List => {
-                for task in replica
-                    .tasks
-                    .iter()
-                    .map(|t| t.1)
-                    .sorted_by_key(|task| task.added.value())
-                {
-                    println!("{}", task);
+                for (id, task) in replica.tasks() {
+                    println!("{id} {task}");
                 }
 
                 Ok(false)

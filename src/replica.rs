@@ -1,14 +1,15 @@
 mod task;
 
 use crate::crdt::{GMap, HybridLogicalClock, Merge};
+use itertools::Itertools;
 use task::Task;
 use uuid::Uuid;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Replica {
-    pub id: Uuid,
-    pub clock: HybridLogicalClock,
-    pub tasks: GMap<Uuid, Task>,
+    id: Uuid,
+    clock: HybridLogicalClock,
+    tasks: GMap<Uuid, Task>,
 }
 
 impl Replica {
@@ -21,6 +22,14 @@ impl Replica {
             clock,
             tasks: GMap::default(),
         }
+    }
+
+    pub fn tasks(&self) -> impl Iterator<Item = (usize, &Task)> {
+        self.tasks
+            .iter()
+            .map(|t| t.1)
+            .sorted_by_key(|task| task.added.value())
+            .enumerate()
     }
 
     #[tracing::instrument(skip(self))]
