@@ -3,7 +3,7 @@ use std::cmp::{Ord, Ordering};
 use std::fmt;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, PartialOrd, Eq)]
+#[derive(Debug, Clone, Eq)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
 pub struct HybridLogicalClock {
     #[cfg_attr(test, proptest(strategy = "timestamp_strategy()"))]
@@ -62,6 +62,12 @@ impl Ord for HybridLogicalClock {
             .cmp(&other.timestamp)
             .then(self.counter.cmp(&other.counter))
             .then(self.node_id.cmp(&other.node_id))
+    }
+}
+
+impl PartialOrd for HybridLogicalClock {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
