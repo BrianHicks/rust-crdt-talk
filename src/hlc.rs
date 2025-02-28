@@ -4,10 +4,36 @@ use std::fmt;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialOrd, Eq)]
+#[cfg_attr(test, derive(proptest_derive::Arbitrary))]
 pub struct HybridLogicalClock {
+    #[cfg_attr(test, proptest(strategy = "timestamp_strategy()"))]
     timestamp: DateTime<Utc>,
-    counter: u64,
+
+    #[cfg_attr(test, proptest(strategy = "counter_strategy()"))]
+    counter: u16,
+
+    #[cfg_attr(test, proptest(strategy = "uuid_strategy()"))]
     node_id: Uuid,
+}
+
+#[cfg(test)]
+fn timestamp_strategy() -> impl proptest::strategy::Strategy<Value = DateTime<Utc>> {
+    use chrono::TimeZone;
+    use proptest::prelude::*;
+
+    (1_700_000_000..1_800_000_000_000i64).prop_map(|unix| Utc.timestamp_opt(unix, 0).unwrap())
+}
+
+#[cfg(test)]
+fn counter_strategy() -> impl proptest::strategy::Strategy<Value = u16> {
+    0..=2u16
+}
+
+#[cfg(test)]
+fn uuid_strategy() -> impl proptest::strategy::Strategy<Value = Uuid> {
+    use proptest::prelude::*;
+
+    any::<u128>().prop_map(Uuid::from_u128)
 }
 
 impl HybridLogicalClock {
