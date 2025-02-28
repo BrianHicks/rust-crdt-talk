@@ -38,7 +38,7 @@ impl Cli {
 
     fn load_replica(&self) -> Result<Replica> {
         if !self.store_path.exists() {
-            return Ok(Replica::default());
+            return Ok(Replica::new());
         }
 
         let file = std::fs::File::open(&self.store_path)
@@ -101,6 +101,16 @@ impl Command {
 
                 Ok(false)
             }
+
+            Self::Add { description } => {
+                let uuid = replica.add_task(description.join(" "));
+
+                eprintln!("Added task");
+                println!("{}", uuid);
+
+                Ok(true)
+            }
+
             _ => anyhow::bail!("Unimplemented"),
         }
     }

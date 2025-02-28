@@ -17,6 +17,17 @@ where
     pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
         self.0.iter()
     }
+
+    pub fn insert(&mut self, key: K, value: V) {
+        match self.0.entry(key) {
+            Entry::Occupied(mut existing) => {
+                existing.get_mut().merge_mut(value);
+            }
+            Entry::Vacant(vacant) => {
+                vacant.insert(value);
+            }
+        }
+    }
 }
 
 impl<K, V> Merge for GMap<K, V>
@@ -26,14 +37,7 @@ where
 {
     fn merge_mut(&mut self, other: Self) {
         for (key, value) in other.0 {
-            match self.0.entry(key) {
-                Entry::Occupied(mut entry) => {
-                    entry.get_mut().merge_mut(value);
-                }
-                Entry::Vacant(entry) => {
-                    entry.insert(value);
-                }
-            }
+            self.0.insert(key, value);
         }
     }
 }
