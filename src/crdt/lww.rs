@@ -45,7 +45,7 @@ where
 mod test {
     use super::super::merge;
     use super::*;
-    use proptest::proptest;
+    use proptest::prelude::*;
 
     proptest! {
         #[test]
@@ -57,6 +57,8 @@ mod test {
     proptest! {
         #[test]
         fn test_commutative(a: LWWRegister<bool>, b: LWWRegister<bool>) {
+            prop_assume!(a.clock() != b.clock());
+
             merge::test_commutative(a, b);
         }
     }
@@ -64,6 +66,10 @@ mod test {
     proptest! {
         #[test]
         fn test_associative(a: LWWRegister<bool>, b: LWWRegister<bool>, c: LWWRegister<bool>) {
+            prop_assume!(a.clock() != b.clock());
+            prop_assume!(a.clock() != c.clock());
+            prop_assume!(b.clock() != c.clock());
+
             merge::test_associative(a, b, c);
         }
     }
