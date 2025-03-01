@@ -1,7 +1,0 @@
-# Seeds for failure cases proptest has generated in the past. It is
-# automatically read and these particular cases re-run before any
-# novel cases are generated.
-#
-# It is recommended to check this file in to source control so that
-# everyone who runs the test benefits from these saved cases.
-cc 498ab72dff6baafad4a01c611d284e5ac45341f4c4277d9374fae3bd872ec72f # shrinks to a = GMap({false: LWWRegister { value: false, clock: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000000 } }}), b = GMap({false: LWWRegister { value: false, clock: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000001 } }})

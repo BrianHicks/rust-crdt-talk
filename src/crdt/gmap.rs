@@ -55,28 +55,28 @@ where
 
 #[cfg(test)]
 mod test {
-    use super::super::lww::LWWRegister;
+    use super::super::max::Max;
     use super::super::merge;
     use super::*;
     use proptest::proptest;
 
     proptest! {
         #[test]
-        fn merge_idempotent(v: GMap<bool, LWWRegister<bool>>) {
+        fn merge_idempotent(v: GMap<bool, Max<bool>>) {
             merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
-        fn merge_commutative(a: GMap<bool, LWWRegister<bool>>, b: GMap<bool, LWWRegister<bool>>) {
+        fn merge_commutative(a: GMap<bool, Max<bool>>, b: GMap<bool, Max<bool>>) {
             merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
-        fn merge_associative(a: GMap<bool, LWWRegister<bool>>, b: GMap<bool, LWWRegister<bool>>, c: GMap<bool, LWWRegister<bool>>) {
+        fn merge_associative(a: GMap<bool, Max<bool>>, b: GMap<bool, Max<bool>>, c: GMap<bool, Max<bool>>) {
             merge::test_associative(a, b, c);
         }
     }

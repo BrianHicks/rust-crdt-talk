@@ -11,3 +11,6 @@ pub use lww::LWWRegister;
 
 pub mod merge;
 pub use merge::Merge;
+
+#[cfg(test)]
+pub mod max;
