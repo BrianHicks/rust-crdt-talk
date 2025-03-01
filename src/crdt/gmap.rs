@@ -38,7 +38,7 @@ where
 {
     fn merge_mut(&mut self, other: Self) {
         for (key, value) in other.0 {
-            self.0.insert(key, value);
+            self.insert(key, value);
         }
     }
 }
