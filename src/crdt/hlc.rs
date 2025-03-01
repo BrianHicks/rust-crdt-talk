@@ -32,7 +32,7 @@ fn counter_strategy() -> impl proptest::strategy::Strategy<Value = u16> {
 fn uuid_strategy() -> impl proptest::strategy::Strategy<Value = Uuid> {
     use proptest::prelude::*;
 
-    any::<u128>().prop_map(Uuid::from_u128)
+    (0..=2u128).prop_map(Uuid::from_u128)
 }
 
 impl HybridLogicalClock {
