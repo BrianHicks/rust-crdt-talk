@@ -21,6 +21,7 @@ impl Replica {
         }
     }
 
+    #[tracing::instrument(skip(self))]
     pub fn tasks(&self) -> impl Iterator<Item = (usize, &Task)> {
         self.document.tasks()
     }
