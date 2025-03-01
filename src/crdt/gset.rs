@@ -1,20 +1,19 @@
 use super::merge::Merge;
-use std::collections::HashSet;
-use std::hash::Hash;
+use std::collections::BTreeSet;
 
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
-pub struct GSet<T: Eq + Hash>(HashSet<T>);
+pub struct GSet<T: Eq + Ord>(BTreeSet<T>);
 
-impl<T: Eq + Hash> GSet<T> {
+impl<T: Eq + Ord> GSet<T> {
     pub fn insert(&mut self, item: T) {
         self.0.insert(item);
     }
 }
 
-impl<T: Eq + Hash> Merge for GSet<T> {
-    fn merge_mut(&mut self, mut other: Self) {
-        for item in other.0.drain() {
+impl<T: Eq + Ord> Merge for GSet<T> {
+    fn merge_mut(&mut self, other: Self) {
+        for item in other.0 {
             self.insert(item)
         }
     }

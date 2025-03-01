@@ -1,17 +1,17 @@
 use super::merge::Merge;
-use std::collections::{hash_map::Entry, HashMap};
+use std::collections::{btree_map::Entry, BTreeMap};
 use std::hash::Hash;
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
-pub struct GMap<K, V>(HashMap<K, V>)
+pub struct GMap<K, V>(BTreeMap<K, V>)
 where
-    K: Hash + Eq,
+    K: Hash + Ord,
     V: Merge;
 
 impl<K, V> GMap<K, V>
 where
-    K: Hash + Eq,
+    K: Hash + Ord,
     V: Merge,
 {
     pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
@@ -37,7 +37,7 @@ where
 
 impl<K, V> Merge for GMap<K, V>
 where
-    K: Hash + Eq,
+    K: Hash + Ord,
     V: Merge,
 {
     fn merge_mut(&mut self, other: Self) {
@@ -49,11 +49,11 @@ where
 
 impl<K, V> Default for GMap<K, V>
 where
-    K: Hash + Eq,
+    K: Hash + Ord,
     V: Merge,
 {
     fn default() -> Self {
-        Self(HashMap::default())
+        Self(BTreeMap::default())
     }
 }
 
