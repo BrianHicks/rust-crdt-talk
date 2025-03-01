@@ -1,15 +1,12 @@
-mod task;
-
 use crate::crdt::{GMap, HybridLogicalClock, Merge};
-use itertools::Itertools;
-use task::Task;
+use crate::document::{Document, Task};
 use uuid::Uuid;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Replica {
     id: Uuid,
     clock: HybridLogicalClock,
-    tasks: GMap<Uuid, Task>,
+    document: Document,
 }
 
 impl Replica {
@@ -20,26 +17,19 @@ impl Replica {
         Self {
             id,
             clock,
-            tasks: GMap::default(),
+            document: Document::default(),
         }
     }
 
     pub fn tasks(&self) -> impl Iterator<Item = (usize, &Task)> {
-        self.tasks
-            .iter()
-            .map(|t| t.1)
-            .sorted_by_key(|task| task.added.value())
-            .enumerate()
+        self.document.tasks()
     }
 
     #[tracing::instrument(skip(self))]
     pub fn add_task(&mut self, description: String) -> Uuid {
-        let id = Uuid::new_v4();
-        let next_clock = self.next_clock();
+        let clock = self.next_clock();
 
-        self.tasks.insert(id, Task::new(description, next_clock));
-
-        id
+        self.document.add_task(description, clock)
     }
 
     #[tracing::instrument(skip(self))]
@@ -47,11 +37,5 @@ impl Replica {
         self.clock.tick();
 
         self.clock
-    }
-}
-
-impl Merge for Replica {
-    fn merge_mut(&mut self, other: Self) {
-        self.tasks.merge_mut(other.tasks);
     }
 }
