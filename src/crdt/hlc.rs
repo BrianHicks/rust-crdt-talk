@@ -69,3 +69,96 @@ impl PartialOrd for HybridLogicalClock {
         Some(self.cmp(other))
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn clocks_are_equal_if_components_are_equal(
+            timestamp in timestamp_strategy(),
+            counter in counter_strategy(),
+            node_id in uuid_strategy(),
+        ) {
+            let clock = HybridLogicalClock {
+                timestamp, counter, node_id
+            };
+
+            assert_eq!(clock, clock);
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn cmp_timestamps_first(
+            timestamp_a in timestamp_strategy(),
+            timestamp_b in timestamp_strategy(),
+            counter in counter_strategy(),
+            node_id in uuid_strategy(),
+        ) {
+            let greater = HybridLogicalClock {
+                timestamp: timestamp_a.max(timestamp_b),
+                counter,
+                node_id,
+            };
+
+            let lesser = HybridLogicalClock {
+                timestamp: timestamp_a.min(timestamp_b),
+                counter,
+                node_id,
+            };
+
+            assert!(greater >= lesser, "{greater:?} < {lesser:?}");
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn cmp_counters_second(
+            timestamp in timestamp_strategy(),
+            counter_a in counter_strategy(),
+            counter_b in counter_strategy(),
+            node_id in uuid_strategy(),
+        ) {
+            let greater = HybridLogicalClock {
+                timestamp,
+                counter: counter_a.max(counter_b),
+                node_id,
+            };
+
+            let lesser = HybridLogicalClock {
+                timestamp,
+                counter: counter_a.min(counter_b),
+                node_id,
+            };
+
+            assert!(greater >= lesser, "{greater:?} < {lesser:?}");
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn cmp_node_ids_third(
+            timestamp in timestamp_strategy(),
+            counter in counter_strategy(),
+            node_id_a in uuid_strategy(),
+            node_id_b in uuid_strategy(),
+        ) {
+            let greater = HybridLogicalClock {
+                timestamp,
+                counter,
+                node_id: node_id_a.max(node_id_b),
+            };
+
+            let lesser = HybridLogicalClock {
+                timestamp,
+                counter,
+                node_id: node_id_a.min(node_id_b),
+            };
+
+            assert!(greater >= lesser, "{greater:?} < {lesser:?}");
+        }
+    }
+}
