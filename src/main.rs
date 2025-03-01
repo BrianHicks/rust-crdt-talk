@@ -82,8 +82,6 @@ enum Command {
     Complete {
         /// UUID of the task to update
         id: Uuid,
-        /// Mark as complete (true) or incomplete (false)
-        complete: bool,
     },
 }
 
@@ -119,7 +117,17 @@ impl Command {
                 }
             }
 
-            _ => anyhow::bail!("Unimplemented"),
+            Self::Complete { id } => {
+                if replica.complete_task(id) {
+                    eprintln!("Updated task");
+
+                    Ok(true)
+                } else {
+                    eprintln!("Task not found");
+
+                    Ok(false)
+                }
+            }
         }
     }
 }

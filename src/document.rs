@@ -39,6 +39,16 @@ impl Document {
             false
         }
     }
+
+    pub fn complete_task(&mut self, id: &Uuid, clock: HybridLogicalClock) -> bool {
+        if let Some(task) = self.tasks.get_mut(id) {
+            task.complete.set(true, clock);
+
+            true
+        } else {
+            false
+        }
+    }
 }
 
 impl Merge for Document {

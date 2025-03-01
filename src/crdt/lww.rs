@@ -16,6 +16,7 @@ impl<T> LWWRegister<T> {
         }
     }
 
+    #[tracing::instrument(skip(self, value, timestamp))]
     pub fn set(&mut self, value: T, timestamp: HybridLogicalClock) {
         self.value = value;
         self.clock = timestamp;

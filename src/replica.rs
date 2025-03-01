@@ -40,10 +40,18 @@ impl Replica {
         self.clock
     }
 
+    #[tracing::instrument(skip(self))]
     pub fn update_task_description(&mut self, id: &Uuid, description: String) -> bool {
         let clock = self.next_clock();
 
         self.document
             .update_task_description(id, description, clock)
+    }
+
+    #[tracing::instrument(skip(self))]
+    pub fn complete_task(&mut self, id: &Uuid) -> bool {
+        let clock = self.next_clock();
+
+        self.document.complete_task(id, clock)
     }
 }
