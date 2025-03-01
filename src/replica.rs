@@ -22,7 +22,7 @@ impl Replica {
     }
 
     #[tracing::instrument(skip(self))]
-    pub fn tasks(&self) -> impl Iterator<Item = (usize, &Task)> {
+    pub fn tasks(&self) -> impl Iterator<Item = (&Uuid, &Task)> {
         self.document.tasks()
     }
 

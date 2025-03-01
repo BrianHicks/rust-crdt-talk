@@ -92,7 +92,7 @@ impl Command {
         match self {
             Self::List => {
                 for (id, task) in replica.tasks() {
-                    println!("{id} {task}");
+                    println!("{task} ({id})");
                 }
 
                 Ok(false)

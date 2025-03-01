@@ -11,12 +11,10 @@ pub struct Document {
 }
 
 impl Document {
-    pub fn tasks(&self) -> impl Iterator<Item = (usize, &Task)> {
+    pub fn tasks(&self) -> impl Iterator<Item = (&Uuid, &Task)> {
         self.tasks
             .iter()
-            .map(|t| t.1)
-            .sorted_by_key(|task| task.added.value())
-            .enumerate()
+            .sorted_by_key(|(_, task)| task.added.value())
     }
 
     pub fn add_task(&mut self, description: String, when: HybridLogicalClock) -> Uuid {
