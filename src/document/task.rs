@@ -10,14 +10,6 @@ pub struct Task {
 }
 
 impl Task {
-    #[tracing::instrument(skip(self))]
-    pub fn highest_clock(&self) -> &HybridLogicalClock {
-        self.added
-            .clock()
-            .max(self.complete.clock())
-            .max(self.description.clock())
-    }
-
     #[tracing::instrument(skip(when))]
     pub fn new(description: String, when: HybridLogicalClock) -> Self {
         Self {

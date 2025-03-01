@@ -1,6 +1,7 @@
 pub trait Merge {
     fn merge_mut(&mut self, other: Self);
 
+    #[cfg(test)]
     fn merge(self, other: Self) -> Self
     where
         Self: Clone,

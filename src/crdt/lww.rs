@@ -25,6 +25,7 @@ impl<T> LWWRegister<T> {
         &self.value
     }
 
+    #[cfg(test)]
     pub fn clock(&self) -> &HybridLogicalClock {
         &self.clock
     }
