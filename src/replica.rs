@@ -10,6 +10,7 @@ pub struct Replica {
 }
 
 impl Replica {
+    #[tracing::instrument(name = "Replica::new")]
     pub fn new() -> Self {
         let id = Uuid::new_v4();
         let clock = HybridLogicalClock::new(id);
@@ -21,26 +22,26 @@ impl Replica {
         }
     }
 
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(name = "Replica::tasks", skip(self))]
     pub fn tasks(&self) -> impl Iterator<Item = (&Uuid, &Task)> {
         self.document.tasks()
     }
 
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(name = "Replica::add_task", skip(self))]
     pub fn add_task(&mut self, description: String) -> Uuid {
         let clock = self.next_clock();
 
         self.document.add_task(description, clock)
     }
 
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(name = "Replica::next_clock", skip(self))]
     fn next_clock(&mut self) -> HybridLogicalClock {
         self.clock.tick();
 
         self.clock
     }
 
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(name = "Replica::update_task_description", skip(self))]
     pub fn update_task_description(&mut self, id: &Uuid, description: String) -> bool {
         let clock = self.next_clock();
 
@@ -48,7 +49,7 @@ impl Replica {
             .update_task_description(id, description, clock)
     }
 
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(name = "Replica::complete_task", skip(self))]
     pub fn complete_task(&mut self, id: &Uuid) -> bool {
         let clock = self.next_clock();
 

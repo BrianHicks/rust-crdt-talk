@@ -9,6 +9,7 @@ pub struct LWWRegister<T> {
 }
 
 impl<T> LWWRegister<T> {
+    #[tracing::instrument(name = "LWW::new", skip(value, timestamp))]
     pub fn new(value: T, timestamp: HybridLogicalClock) -> Self {
         LWWRegister {
             value,
@@ -16,17 +17,19 @@ impl<T> LWWRegister<T> {
         }
     }
 
-    #[tracing::instrument(skip(self, value, timestamp))]
+    #[tracing::instrument(name = "LWW::set", skip(self, value, timestamp))]
     pub fn set(&mut self, value: T, timestamp: HybridLogicalClock) {
         self.value = value;
         self.clock = timestamp;
     }
 
+    #[tracing::instrument(name = "LWW::value", skip(self))]
     pub fn value(&self) -> &T {
         &self.value
     }
 
     #[cfg(test)]
+    #[tracing::instrument(name = "LWW::clock", skip(self))]
     pub fn clock(&self) -> &HybridLogicalClock {
         &self.clock
     }

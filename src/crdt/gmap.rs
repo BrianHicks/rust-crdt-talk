@@ -18,7 +18,7 @@ where
         self.0.iter()
     }
 
-    #[tracing::instrument(skip(self, key, value))]
+    #[tracing::instrument(name = "GMap::insert", skip(self, key, value))]
     pub fn insert(&mut self, key: K, value: V) {
         match self.0.entry(key) {
             Entry::Occupied(mut existing) => {
@@ -30,6 +30,7 @@ where
         }
     }
 
+    #[tracing::instrument(name = "GMap::get_mut", skip(self, key))]
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         self.0.get_mut(&key)
     }
@@ -40,6 +41,7 @@ where
     K: Hash + Ord,
     V: Merge,
 {
+    #[tracing::instrument(name = "GMap::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, other: Self) {
         for (key, value) in other.0 {
             self.insert(key, value);
@@ -52,6 +54,7 @@ where
     K: Hash + Ord,
     V: Merge,
 {
+    #[tracing::instrument(name = "GMap::default")]
     fn default() -> Self {
         Self(BTreeMap::default())
     }

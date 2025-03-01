@@ -36,6 +36,7 @@ fn uuid_strategy() -> impl proptest::strategy::Strategy<Value = Uuid> {
 }
 
 impl HybridLogicalClock {
+    #[tracing::instrument(name = "HLC::new")]
     pub fn new(node_id: Uuid) -> Self {
         HybridLogicalClock {
             timestamp: Utc::now(),
@@ -44,6 +45,7 @@ impl HybridLogicalClock {
         }
     }
 
+    #[tracing::instrument(name = "HLC::tick", skip(self))]
     pub fn tick(&mut self) {
         let now = Utc::now();
         if now > self.timestamp {
@@ -56,6 +58,7 @@ impl HybridLogicalClock {
 }
 
 impl Ord for HybridLogicalClock {
+    #[tracing::instrument(name = "HLC::cmp", skip(self))]
     fn cmp(&self, other: &Self) -> Ordering {
         self.timestamp
             .cmp(&other.timestamp)

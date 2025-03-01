@@ -10,7 +10,7 @@ pub struct Task {
 }
 
 impl Task {
-    #[tracing::instrument(skip(when))]
+    #[tracing::instrument(name = "Task::new", skip(when))]
     pub fn new(description: String, when: HybridLogicalClock) -> Self {
         Self {
             added: LWWRegister::new(Utc::now(), when),
@@ -21,6 +21,7 @@ impl Task {
 }
 
 impl Merge for Task {
+    #[tracing::instrument(name = "Task::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, other: Self) {
         self.added.merge_mut(other.added);
         self.complete.merge_mut(other.complete);
@@ -29,6 +30,7 @@ impl Merge for Task {
 }
 
 impl fmt::Display for Task {
+    #[tracing::instrument(name = "Task::fmt", skip(self, f))]
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let status = if *self.complete.value() { "[x]" } else { "[ ]" };
         write!(f, "{} {}", status, self.description.value())

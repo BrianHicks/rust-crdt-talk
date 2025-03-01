@@ -6,12 +6,14 @@ use std::collections::BTreeSet;
 pub struct GSet<T: Eq + Ord>(BTreeSet<T>);
 
 impl<T: Eq + Ord> GSet<T> {
+    #[tracing::instrument(name = "GSet::insert", skip(self, item))]
     pub fn insert(&mut self, item: T) {
         self.0.insert(item);
     }
 }
 
 impl<T: Eq + Ord> Merge for GSet<T> {
+    #[tracing::instrument(name = "GSet::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, other: Self) {
         for item in other.0 {
             self.insert(item)
