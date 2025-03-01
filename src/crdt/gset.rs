@@ -7,10 +7,6 @@ use std::hash::Hash;
 pub struct GSet<T: Eq + Hash>(HashSet<T>);
 
 impl<T: Eq + Hash> GSet<T> {
-    pub fn new() -> Self {
-        GSet(HashSet::new())
-    }
-
     pub fn insert(&mut self, item: T) {
         self.0.insert(item);
     }

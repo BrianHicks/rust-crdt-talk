@@ -1,4 +1,4 @@
-use crate::crdt::{GMap, HybridLogicalClock, Merge};
+use crate::crdt::HybridLogicalClock;
 use crate::document::{Document, Task};
 use uuid::Uuid;
 

@@ -21,9 +21,9 @@ impl Task {
     #[tracing::instrument(skip(when))]
     pub fn new(description: String, when: HybridLogicalClock) -> Self {
         Self {
-            added: LWWRegister::new(Utc::now(), when.clone()),
-            complete: LWWRegister::new(false, when.clone()),
-            description: LWWRegister::new(description, when.clone()),
+            added: LWWRegister::new(Utc::now(), when),
+            complete: LWWRegister::new(false, when),
+            description: LWWRegister::new(description, when),
         }
     }
 }

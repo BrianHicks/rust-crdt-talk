@@ -53,17 +53,6 @@ impl HybridLogicalClock {
             self.counter += 1;
         }
     }
-
-    pub fn next(&self) -> Self {
-        let mut next = self.clone();
-        next.tick();
-
-        next
-    }
-
-    pub fn claim(mut self, node_id: Uuid) {
-        self.node_id = node_id;
-    }
 }
 
 impl Ord for HybridLogicalClock {
