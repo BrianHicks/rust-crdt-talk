@@ -55,7 +55,7 @@ impl Cli {
         let file = std::fs::File::create(&self.store_path)
             .with_context(|| format!("could not create `{}`", self.store_path.display()))?;
 
-        serde_json::to_writer(file, replica)
+        serde_json::to_writer_pretty(file, replica)
             .with_context(|| format!("could not write JSON to `{}`", self.store_path.display()))?;
 
         Ok(())
