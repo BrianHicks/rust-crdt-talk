@@ -50,7 +50,7 @@ mod test {
     proptest! {
         #[test]
         fn test_idempotent(v: LWWRegister<bool>) {
-           merge::test_idempotent(v);
+            merge::test_idempotent(v);
         }
     }
 
