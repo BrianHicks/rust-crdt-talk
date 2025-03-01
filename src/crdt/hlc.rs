@@ -20,7 +20,7 @@ fn timestamp_strategy() -> impl proptest::strategy::Strategy<Value = DateTime<Ut
     use chrono::TimeZone;
     use proptest::prelude::*;
 
-    (1_700_000_000..1_700_000_003i64).prop_map(|unix| Utc.timestamp_opt(unix, 0).unwrap())
+    (1_700_000_000..=1_700_000_002i64).prop_map(|unix| Utc.timestamp_opt(unix, 0).unwrap())
 }
 
 #[cfg(test)]
