@@ -76,7 +76,7 @@ enum Command {
         /// UUID of the task to update
         id: Uuid,
         /// New description of the task
-        description: String,
+        description: Vec<String>,
     },
     /// Mark a task as complete or incomplete
     Complete {
@@ -105,6 +105,18 @@ impl Command {
                 println!("{}", uuid);
 
                 Ok(true)
+            }
+
+            Self::Update { id, description } => {
+                if replica.update_task_description(id, description.join(" ")) {
+                    eprintln!("Updated task");
+
+                    Ok(true)
+                } else {
+                    eprintln!("Task not found");
+
+                    Ok(false)
+                }
             }
 
             _ => anyhow::bail!("Unimplemented"),

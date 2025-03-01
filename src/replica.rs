@@ -38,4 +38,11 @@ impl Replica {
 
         self.clock
     }
+
+    pub fn update_task_description(&mut self, id: &Uuid, description: String) -> bool {
+        let clock = self.next_clock();
+
+        self.document
+            .update_task_description(id, description, clock)
+    }
 }

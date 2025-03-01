@@ -29,6 +29,10 @@ where
             }
         }
     }
+
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        self.0.get_mut(&key)
+    }
 }
 
 impl<K, V> Merge for GMap<K, V>

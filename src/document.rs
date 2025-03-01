@@ -26,6 +26,21 @@ impl Document {
 
         id
     }
+
+    pub fn update_task_description(
+        &mut self,
+        id: &Uuid,
+        description: String,
+        clock: HybridLogicalClock,
+    ) -> bool {
+        if let Some(task) = self.tasks.get_mut(id) {
+            task.description.set(description, clock);
+
+            true
+        } else {
+            false
+        }
+    }
 }
 
 impl Merge for Document {
