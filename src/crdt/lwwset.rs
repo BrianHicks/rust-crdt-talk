@@ -9,12 +9,28 @@ pub struct LWWSet<T: Ord> {
 }
 
 impl<T: Ord> LWWSet<T> {
+    #[tracing::instrument(name = "LWWSet::insert", skip(self, item, clock))]
+    pub fn insert(&mut self, item: T, clock: HybridLogicalClock) {
+        if Some(&clock) > self.adds.get(&item) {
+            self.adds.insert(item, clock);
+        }
+    }
+
+    #[tracing::instrument(name = "LWWSet::remove", skip(self, item, clock))]
+    pub fn remove(&mut self, item: T, clock: HybridLogicalClock) {
+        if Some(&clock) > self.removes.get(&item) {
+            self.removes.insert(item, clock);
+        }
+    }
+
+    #[tracing::instrument(name = "LWWSet::contains", skip(self, item))]
     pub fn contains(&self, item: &T) -> bool {
         self.adds.get(item) > self.removes.get(item)
     }
 }
 
 impl<T: Ord> Merge for LWWSet<T> {
+    #[tracing::instrument(name = "LWWSet::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, other: Self) {
         for (item, clock) in other.adds {
             if self.adds.get(&item) < Some(&clock) {
