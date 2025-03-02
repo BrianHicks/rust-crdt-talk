@@ -46,6 +46,18 @@ impl<T: Ord> Merge for LWWSet<T> {
     }
 }
 
+impl<K> Default for LWWSet<K>
+where
+    K: Ord,
+{
+    fn default() -> Self {
+        LWWSet {
+            adds: BTreeMap::default(),
+            removes: BTreeMap::default(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::super::merge;
