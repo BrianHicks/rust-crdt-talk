@@ -1,0 +1,10 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc ccc98bb7b9b23db0feb154f6eac7101e7096bb41b2811f3b2516185e910c07c0 # shrinks to v = LWWSet { adds: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000000 }}, removes: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000001 }} }
+cc d06669e7cec052f086873dc5d3a75f3fd33c30551536d9349f34d899c7aff976 # shrinks to a = LWWSet { adds: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:21Z, counter: 1, node_id: 00000000-0000-0000-0000-000000000001 }}, removes: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000000 }} }, b = LWWSet { adds: {true: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000000 }}, removes: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000001 }} }
+cc debc59a8d52d64f0320316a125295f26bd3eb51bd0c2065da8298fc0f22fe8ce # shrinks to a = LWWSet { adds: {}, removes: {} }, b = LWWSet { adds: {}, removes: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:21Z, counter: 1, node_id: 00000000-0000-0000-0000-000000000000 }} }, c = LWWSet { adds: {false: HybridLogicalClock { timestamp: 2023-11-14T22:13:21Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000000 }}, removes: {} }
+cc 631f4c2a6b984964c93c3958fba1b936be6518509c310084b5fe03d7abe54e5c # shrinks to mut a = LWWSet { adds: {}, removes: {} }, mut b = LWWSet { adds: {}, removes: {true: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000001 }} }, mut c = LWWSet { adds: {true: HybridLogicalClock { timestamp: 2023-11-14T22:13:20Z, counter: 0, node_id: 00000000-0000-0000-0000-000000000000 }}, removes: {} }
