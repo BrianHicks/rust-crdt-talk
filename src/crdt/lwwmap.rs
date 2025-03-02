@@ -1,7 +1,7 @@
 use super::{HybridLogicalClock, LWWSet, Merge};
 use std::collections::{btree_map::Entry, BTreeMap};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct LWWMap<K, V>
 where
     K: Ord,
@@ -57,6 +57,43 @@ where
     }
 }
 
+#[cfg(test)]
+pub fn lwwmap_strategy<K, V>(
+    k_strat: impl proptest::strategy::Strategy<Value = K> + 'static,
+    v_strat: impl proptest::strategy::Strategy<Value = V> + 'static,
+) -> impl proptest::strategy::Strategy<Value = LWWMap<K, V>>
+where
+    K: Ord + Clone + std::fmt::Debug,
+    V: Merge + std::fmt::Debug,
+{
+    use proptest::collection::vec;
+    use proptest::prelude::*;
+
+    vec(
+        (
+            k_strat,
+            v_strat,
+            any::<HybridLogicalClock>(),
+            any::<Option<HybridLogicalClock>>(),
+        ),
+        0..2,
+    )
+    .prop_map(|inserts| {
+        let mut map = LWWMap::default();
+
+        for (key, value, clock, removed_at_opt) in inserts {
+            map.insert(key.clone(), value, clock);
+
+            if let Some(removed_at) = removed_at_opt {
+                map.remove(key.clone(), removed_at);
+            }
+        }
+
+        map
+    })
+    .boxed()
+}
+
 impl<K, V> Merge for LWWMap<K, V>
 where
     K: Ord + Clone,
@@ -71,6 +108,35 @@ where
         // add and merge any new values
         for (key, value) in other.values {
             self.insert_value(key, value);
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::super::merge;
+    use super::*;
+    use crate::crdt::max::Max;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_idempotent(v in lwwmap_strategy(any::<bool>(), any::<Max<bool>>())) {
+            merge::test_idempotent(v);
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn test_commutative(a in lwwmap_strategy(any::<bool>(), any::<Max<bool>>()), b in lwwmap_strategy(any::<bool>(), any::<Max<bool>>())) {
+            merge::test_commutative(a, b);
+        }
+    }
+
+    proptest! {
+        #[test]
+        fn test_associative(a in lwwmap_strategy(any::<bool>(), any::<Max<bool>>()), b in lwwmap_strategy(any::<bool>(), any::<Max<bool>>()), c in lwwmap_strategy(any::<bool>(), any::<Max<bool>>())) {
+            merge::test_associative(a, b, c);
         }
     }
 }
