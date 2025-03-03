@@ -138,21 +138,21 @@ mod test {
 
     proptest! {
         #[test]
-        fn test_idempotent(v: LWWMap<bool, Max<bool>>) {
+        fn merge_idempotent(v: LWWMap<bool, Max<bool>>) {
             merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
-        fn test_commutative(a: LWWMap<bool, Max<bool>>, b: LWWMap<bool, Max<bool>>) {
+        fn merge_commutative(a: LWWMap<bool, Max<bool>>, b: LWWMap<bool, Max<bool>>) {
             merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
-        fn test_associative(a: LWWMap<bool, Max<bool>>, b: LWWMap<bool, Max<bool>>, c: LWWMap<bool, Max<bool>>) {
+        fn merge_associative(a: LWWMap<bool, Max<bool>>, b: LWWMap<bool, Max<bool>>, c: LWWMap<bool, Max<bool>>) {
             merge::test_associative(a, b, c);
         }
     }
