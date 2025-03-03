@@ -45,8 +45,11 @@ where
 
     #[tracing::instrument(name = "LWWMap::remove", skip(self, key, clock))]
     pub fn remove(&mut self, key: K, clock: HybridLogicalClock) {
-        self.values.remove(&key);
-        self.keys.remove(key, clock);
+        self.keys.remove(key.clone(), clock);
+
+        if !self.keys.contains(&key) {
+            self.values.remove(&key);
+        }
     }
 }
 
@@ -71,14 +74,9 @@ where
     fn merge_mut(&mut self, other: Self) {
         self.keys.merge_mut(other.keys);
 
-        // remove any values with newly-missing keys
-        self.values.retain(|key, _| self.keys.contains(key));
-
         // add and merge any new values
         for (key, value) in other.values {
-            if self.keys.contains(&key) {
-                self.insert_value(key, value);
-            }
+            self.insert_value(key, value);
         }
     }
 }
