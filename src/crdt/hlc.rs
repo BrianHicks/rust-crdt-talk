@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
 use std::cmp::{Ord, Ordering};
+use std::fmt::Debug;
 use uuid::Uuid;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Copy, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
 pub struct HybridLogicalClock {
     #[cfg_attr(test, proptest(strategy = "timestamp_strategy()"))]
@@ -70,6 +71,16 @@ impl Ord for HybridLogicalClock {
 impl PartialOrd for HybridLogicalClock {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl Debug for HybridLogicalClock {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{:?}_{:?}_{:?}",
+            self.timestamp, self.counter, self.node_id
+        )
     }
 }
 
