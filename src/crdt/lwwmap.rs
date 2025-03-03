@@ -26,7 +26,10 @@ where
     #[tracing::instrument(name = "LWWMap::insert", skip(self, key, value, clock))]
     pub fn insert(&mut self, key: K, value: V, clock: HybridLogicalClock) {
         self.keys.insert(key.clone(), clock);
-        self.insert_value(key, value);
+
+        if self.keys.contains(&key) {
+            self.insert_value(key, value);
+        }
     }
 
     fn insert_value(&mut self, key: K, value: V) {
