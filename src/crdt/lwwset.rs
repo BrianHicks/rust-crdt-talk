@@ -9,6 +9,10 @@ pub struct LWWSet<T: Ord> {
 }
 
 impl<T: Ord> LWWSet<T> {
+    pub fn iter(&self) -> impl Iterator<Item = &T> {
+        self.adds.keys().filter(|item| self.contains(item))
+    }
+
     #[tracing::instrument(name = "LWWSet::insert", skip(self, item, clock))]
     pub fn insert(&mut self, item: T, clock: HybridLogicalClock) {
         if Some(&clock) > self.adds.get(&item) {
