@@ -73,7 +73,9 @@ where
 
         // add and merge any new values
         for (key, value) in other.values {
-            self.insert_value(key, value);
+            if self.keys.contains(&key) {
+                self.insert_value(key, value);
+            }
         }
     }
 }
