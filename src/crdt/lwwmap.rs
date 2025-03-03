@@ -145,7 +145,7 @@ mod test {
         fn removing_removes_value(mut base: LWWMap<bool, Max<bool>>, k: bool, v: bool) {
             let mut clock = HybridLogicalClock::new(Uuid::nil());
 
-            base.insert(k, v.into(), clock.clone());
+            base.insert(k, v.into(), clock);
 
             clock.tick();
             base.remove(k, clock);

@@ -32,7 +32,7 @@ where
 
     #[tracing::instrument(name = "GMap::get_mut", skip(self, key))]
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
-        self.0.get_mut(&key)
+        self.0.get_mut(key)
     }
 }
 
