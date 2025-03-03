@@ -137,6 +137,22 @@ mod test {
     use super::*;
     use crate::crdt::max::Max;
     use proptest::prelude::*;
+    use uuid::Uuid;
+
+    proptest! {
+        #[test]
+        fn removing_removes_value(mut base: LWWMap<bool, Max<bool>>, k: bool, v: bool) {
+            let mut clock = HybridLogicalClock::new(Uuid::nil());
+
+            base.insert(k, v.into(), clock.clone());
+
+            clock.tick();
+            base.remove(k, clock);
+
+            assert!(!base.keys.contains(&k));
+            assert!(!base.values.contains_key(&k));
+        }
+    }
 
     proptest! {
         #[test]
