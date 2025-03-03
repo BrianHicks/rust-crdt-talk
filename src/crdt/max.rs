@@ -12,6 +12,15 @@ impl<T: Ord> Merge for Max<T> {
     }
 }
 
+impl<T> From<T> for Max<T>
+where
+    T: Ord,
+{
+    fn from(t: T) -> Self {
+        Max(t)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::super::merge;
