@@ -1,3 +1,6 @@
+#[cfg(test)]
+use proptest::arbitrary::{Arbitrary, ParamsFor, StrategyFor};
+
 use super::{HybridLogicalClock, LWWSet, Merge};
 use std::collections::{btree_map::Entry, BTreeMap};
 
@@ -57,43 +60,6 @@ where
     }
 }
 
-#[cfg(test)]
-pub fn lwwmap_strategy<K, V>(
-    k_strat: impl proptest::strategy::Strategy<Value = K> + 'static,
-    v_strat: impl proptest::strategy::Strategy<Value = V> + 'static,
-) -> impl proptest::strategy::Strategy<Value = LWWMap<K, V>>
-where
-    K: Ord + Clone + std::fmt::Debug,
-    V: Merge + std::fmt::Debug,
-{
-    use proptest::collection::vec;
-    use proptest::prelude::*;
-
-    vec(
-        (
-            k_strat,
-            v_strat,
-            any::<HybridLogicalClock>(),
-            any::<Option<HybridLogicalClock>>(),
-        ),
-        0..2,
-    )
-    .prop_map(|inserts| {
-        let mut map = LWWMap::default();
-
-        for (key, value, clock, removed_at_opt) in inserts {
-            map.insert(key.clone(), value, clock);
-
-            if let Some(removed_at) = removed_at_opt {
-                map.remove(key.clone(), removed_at);
-            }
-        }
-
-        map
-    })
-    .boxed()
-}
-
 impl<K, V> Merge for LWWMap<K, V>
 where
     K: Ord + Clone,
@@ -113,6 +79,57 @@ where
 }
 
 #[cfg(test)]
+impl<K, V> Arbitrary for LWWMap<K, V>
+where
+    K: Ord + std::fmt::Debug + Clone + Arbitrary,
+    V: Merge + std::fmt::Debug + Arbitrary,
+{
+    type Parameters = (
+        ParamsFor<K>,
+        ParamsFor<V>,
+        ParamsFor<HybridLogicalClock>,
+        ParamsFor<Option<HybridLogicalClock>>,
+    );
+
+    type Strategy = proptest::strategy::Map<
+        StrategyFor<Vec<(K, V, HybridLogicalClock, Option<HybridLogicalClock>)>>,
+        fn(Vec<(K, V, HybridLogicalClock, Option<HybridLogicalClock>)>) -> Self,
+    >;
+
+    fn arbitrary_with(params: Self::Parameters) -> Self::Strategy {
+        use proptest::collection::vec;
+        use proptest::prelude::*;
+
+        let (k_param, v_param, add_param, remove_param) = params;
+
+        proptest::strategy::Strategy::prop_map(
+            vec(
+                (
+                    any_with::<K>(k_param),
+                    any_with::<V>(v_param),
+                    any_with::<HybridLogicalClock>(add_param),
+                    any_with::<Option<HybridLogicalClock>>(remove_param),
+                ),
+                1..4,
+            ),
+            |items| {
+                let mut map = LWWMap::default();
+
+                for (key, value, clock, removed_at_opt) in items {
+                    map.insert(key.clone(), value, clock);
+
+                    if let Some(removed_at) = removed_at_opt {
+                        map.remove(key.clone(), removed_at);
+                    }
+                }
+
+                map
+            },
+        )
+    }
+}
+
+#[cfg(test)]
 mod test {
     use super::super::merge;
     use super::*;
@@ -121,21 +138,21 @@ mod test {
 
     proptest! {
         #[test]
-        fn test_idempotent(v in lwwmap_strategy(any::<bool>(), any::<Max<bool>>())) {
+        fn test_idempotent(v: LWWMap<bool, Max<bool>>) {
             merge::test_idempotent(v);
         }
     }
 
     proptest! {
         #[test]
-        fn test_commutative(a in lwwmap_strategy(any::<bool>(), any::<Max<bool>>()), b in lwwmap_strategy(any::<bool>(), any::<Max<bool>>())) {
+        fn test_commutative(a: LWWMap<bool, Max<bool>>, b: LWWMap<bool, Max<bool>>) {
             merge::test_commutative(a, b);
         }
     }
 
     proptest! {
         #[test]
-        fn test_associative(a in lwwmap_strategy(any::<bool>(), any::<Max<bool>>()), b in lwwmap_strategy(any::<bool>(), any::<Max<bool>>()), c in lwwmap_strategy(any::<bool>(), any::<Max<bool>>())) {
+        fn test_associative(a: LWWMap<bool, Max<bool>>, b: LWWMap<bool, Max<bool>>, c: LWWMap<bool, Max<bool>>) {
             merge::test_associative(a, b, c);
         }
     }
