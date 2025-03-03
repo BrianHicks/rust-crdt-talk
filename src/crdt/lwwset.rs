@@ -37,15 +37,11 @@ impl<T: Ord> Merge for LWWSet<T> {
     #[tracing::instrument(name = "LWWSet::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, other: Self) {
         for (item, clock) in other.adds {
-            if self.adds.get(&item) < Some(&clock) {
-                self.adds.insert(item, clock);
-            }
+            self.insert(item, clock);
         }
 
         for (item, clock) in other.removes {
-            if self.removes.get(&item) < Some(&clock) {
-                self.removes.insert(item, clock);
-            }
+            self.remove(item, clock);
         }
     }
 }
