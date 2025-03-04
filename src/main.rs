@@ -66,11 +66,13 @@ impl Cli {
 enum Command {
     /// List all tasks
     List,
+
     /// Add a new task
     Add {
         /// Description of the task
         description: Vec<String>,
     },
+
     /// Update the description of an existing task
     Update {
         /// UUID of the task to update
@@ -78,6 +80,7 @@ enum Command {
         /// New description of the task
         description: Vec<String>,
     },
+
     /// Mark a task as complete or incomplete
     Complete {
         /// UUID of the task to update
