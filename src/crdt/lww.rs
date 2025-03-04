@@ -1,15 +1,15 @@
-use super::hlc::HybridLogicalClock;
-use super::merge::Merge;
+use super::{HybridLogicalClock, Merge};
+use std::fmt::Debug;
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
-pub struct LWWRegister<T> {
+pub struct LWWRegister<T: Debug> {
     value: T,
     clock: HybridLogicalClock,
 }
 
-impl<T> LWWRegister<T> {
-    #[tracing::instrument(name = "LWW::new", skip(value, timestamp))]
+impl<T: Debug> LWWRegister<T> {
+    #[tracing::instrument(name = "LWW::new", skip(timestamp))]
     pub fn new(value: T, timestamp: HybridLogicalClock) -> Self {
         LWWRegister {
             value,
@@ -17,7 +17,7 @@ impl<T> LWWRegister<T> {
         }
     }
 
-    #[tracing::instrument(name = "LWW::set", skip(self, value, timestamp))]
+    #[tracing::instrument(name = "LWW::set", skip(self, timestamp))]
     pub fn set(&mut self, value: T, timestamp: HybridLogicalClock) {
         self.value = value;
         self.clock = timestamp;
@@ -35,7 +35,7 @@ impl<T> LWWRegister<T> {
     }
 }
 
-impl<T> Merge for LWWRegister<T>
+impl<T: Debug> Merge for LWWRegister<T>
 where
     T: Clone + Ord,
 {

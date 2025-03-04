@@ -1,5 +1,6 @@
 use super::Merge;
 use std::collections::{btree_map::Entry, BTreeMap, BTreeSet};
+use std::fmt::Debug;
 
 #[cfg(test)]
 use proptest::arbitrary::{Arbitrary, ParamsFor, StrategyFor};
@@ -7,7 +8,7 @@ use proptest::arbitrary::{Arbitrary, ParamsFor, StrategyFor};
 #[derive(Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct TwoPMap<K, V>
 where
-    K: Ord,
+    K: Ord + Debug,
     V: Merge,
 {
     adds: BTreeMap<K, V>,
@@ -16,14 +17,14 @@ where
 
 impl<K, V> TwoPMap<K, V>
 where
-    K: Ord,
+    K: Ord + Debug,
     V: Merge,
 {
     pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
         self.adds.iter().filter(|(k, _)| !self.removes.contains(k))
     }
 
-    #[tracing::instrument(name = "TwoPMap::insert", skip(self, key, value))]
+    #[tracing::instrument(name = "TwoPMap::insert", skip(self, value))]
     pub fn insert(&mut self, key: K, value: V) {
         if self.removes.contains(&key) {
             return;
@@ -39,13 +40,13 @@ where
         }
     }
 
-    #[tracing::instrument(name = "TwoPMap::remove", skip(self, key))]
+    #[tracing::instrument(name = "TwoPMap::remove", skip(self))]
     pub fn remove(&mut self, key: K) {
         self.adds.remove(&key);
         self.removes.insert(key);
     }
 
-    #[tracing::instrument(name = "TwoPMap::get_mut", skip(self, key))]
+    #[tracing::instrument(name = "TwoPMap::get_mut", skip(self))]
     pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
         if self.removes.contains(key) {
             return None;
@@ -57,7 +58,7 @@ where
 
 impl<K, V> Merge for TwoPMap<K, V>
 where
-    K: Ord,
+    K: Ord + Debug,
     V: Merge,
 {
     #[tracing::instrument(name = "TwoPMap::merge_mut", skip(self, other))]
@@ -73,7 +74,7 @@ where
 
 impl<K, V> Default for TwoPMap<K, V>
 where
-    K: Ord,
+    K: Ord + Debug,
     V: Merge,
 {
     #[tracing::instrument(name = "TwoPMap::default")]
