@@ -44,6 +44,15 @@ where
         self.adds.remove(&key);
         self.removes.insert(key);
     }
+
+    #[tracing::instrument(name = "TwoPMap::get_mut", skip(self, key))]
+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V> {
+        if self.removes.contains(key) {
+            return None;
+        }
+
+        self.adds.get_mut(key)
+    }
 }
 
 impl<K, V> Merge for TwoPMap<K, V>
