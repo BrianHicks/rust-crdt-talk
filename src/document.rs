@@ -1,13 +1,13 @@
 mod task;
 
-use crate::crdt::{GMap, HybridLogicalClock, Merge};
+use crate::crdt::{HybridLogicalClock, Merge, TwoPMap};
 use itertools::Itertools;
 pub use task::Task;
 use uuid::Uuid;
 
 #[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct Document {
-    pub tasks: GMap<Uuid, Task>,
+    pub tasks: TwoPMap<Uuid, Task>,
 }
 
 impl Document {
