@@ -9,9 +9,6 @@ pub use hlc::HybridLogicalClock;
 pub mod lww;
 pub use lww::LWWRegister;
 
-pub mod lwwmap;
-pub use lwwmap::LWWMap;
-
 pub mod lwwset;
 pub use lwwset::LWWSet;
 
