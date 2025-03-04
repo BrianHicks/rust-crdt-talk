@@ -79,6 +79,12 @@ enum Command {
 
     /// Archive completed tasks
     Archive,
+
+    /// Merge two replicas together
+    Merge {
+        /// Path to the other data file
+        other: PathBuf,
+    },
 }
 
 impl Command {
@@ -129,6 +135,17 @@ impl Command {
                 replica.archive_completed_tasks();
 
                 eprintln!("Archived tasks");
+
+                Ok(true)
+            }
+
+            Self::Merge { other } => {
+                let other_replica =
+                    load_replica(other, false).context("could not load replica to merge")?;
+
+                replica.merge(other_replica);
+
+                eprintln!("Merged replicas");
 
                 Ok(true)
             }

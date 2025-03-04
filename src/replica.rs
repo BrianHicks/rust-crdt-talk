@@ -1,4 +1,4 @@
-use crate::crdt::HybridLogicalClock;
+use crate::crdt::{HybridLogicalClock, Merge};
 use crate::document::{Document, Task};
 use uuid::Uuid;
 
@@ -58,5 +58,9 @@ impl Replica {
 
     pub fn archive_completed_tasks(&mut self) {
         self.document.archive_completed_tasks()
+    }
+
+    pub fn merge(&mut self, other: Replica) {
+        self.document.merge_mut(other.document);
     }
 }
