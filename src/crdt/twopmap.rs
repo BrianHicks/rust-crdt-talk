@@ -19,6 +19,10 @@ where
     K: Ord,
     V: Merge,
 {
+    pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
+        self.adds.iter().filter(|(k, _)| !self.removes.contains(k))
+    }
+
     pub fn insert(&mut self, key: K, value: V) {
         if self.removes.contains(&key) {
             return;
