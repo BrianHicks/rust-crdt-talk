@@ -23,6 +23,7 @@ where
         self.adds.iter().filter(|(k, _)| !self.removes.contains(k))
     }
 
+    #[tracing::instrument(name = "TwoPMap::insert", skip(self, key, value))]
     pub fn insert(&mut self, key: K, value: V) {
         if self.removes.contains(&key) {
             return;
@@ -38,6 +39,7 @@ where
         }
     }
 
+    #[tracing::instrument(name = "TwoPMap::remove", skip(self, key))]
     pub fn remove(&mut self, key: K) {
         self.adds.remove(&key);
         self.removes.insert(key);
@@ -49,6 +51,7 @@ where
     K: Ord,
     V: Merge,
 {
+    #[tracing::instrument(name = "TwoPMap::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, mut other: Self) {
         self.removes.append(&mut other.removes);
 
@@ -64,6 +67,7 @@ where
     K: Ord,
     V: Merge,
 {
+    #[tracing::instrument(name = "TwoPMap::default")]
     fn default() -> Self {
         TwoPMap {
             adds: BTreeMap::default(),
