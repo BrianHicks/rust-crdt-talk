@@ -8,7 +8,7 @@ use proptest::arbitrary::{Arbitrary, ParamsFor, StrategyFor};
 #[derive(Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct TwoPMap<K, V>
 where
-    K: Ord + Debug,
+    K: Ord + Debug + Clone,
     V: Merge,
 {
     adds: BTreeMap<K, V>,
@@ -17,7 +17,7 @@ where
 
 impl<K, V> TwoPMap<K, V>
 where
-    K: Ord + Debug,
+    K: Ord + Debug + Clone,
     V: Merge,
 {
     pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
@@ -54,11 +54,30 @@ where
 
         self.adds.get_mut(key)
     }
+
+    #[tracing::instrument(name = "TwoPMap::retain", skip(self, decider))]
+    pub fn retain(&mut self, decider: impl Fn(&K, &V) -> bool) {
+        let mut to_remove = BTreeSet::new();
+
+        for (k, v) in self.adds.iter() {
+            if !decider(k, v) {
+                to_remove.insert(k.clone());
+            }
+        }
+
+        self.adds.retain(|k, _| !to_remove.contains(k));
+        self.removes.append(&mut to_remove);
+
+        // In unstable Rust:
+        // self.adds
+        //     .extract_if(decider)
+        //     .for_each(|k, _| self.removes.insert(k));
+    }
 }
 
 impl<K, V> Merge for TwoPMap<K, V>
 where
-    K: Ord + Debug,
+    K: Ord + Debug + Clone,
     V: Merge,
 {
     #[tracing::instrument(name = "TwoPMap::merge_mut", skip(self, other))]
@@ -74,7 +93,7 @@ where
 
 impl<K, V> Default for TwoPMap<K, V>
 where
-    K: Ord + Debug,
+    K: Ord + Debug + Clone,
     V: Merge,
 {
     #[tracing::instrument(name = "TwoPMap::default")]

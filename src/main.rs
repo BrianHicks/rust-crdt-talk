@@ -86,6 +86,9 @@ enum Command {
         /// UUID of the task to update
         id: Uuid,
     },
+
+    /// Archive completed tasks
+    Archive,
 }
 
 impl Command {
@@ -130,6 +133,14 @@ impl Command {
 
                     Ok(false)
                 }
+            }
+
+            Self::Archive => {
+                replica.archive_completed_tasks();
+
+                eprintln!("Archived tasks");
+
+                Ok(true)
             }
         }
     }

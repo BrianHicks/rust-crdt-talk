@@ -55,4 +55,8 @@ impl Replica {
 
         self.document.complete_task(id, clock)
     }
+
+    pub fn archive_completed_tasks(&mut self) {
+        self.document.archive_completed_tasks()
+    }
 }

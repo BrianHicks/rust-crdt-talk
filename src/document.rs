@@ -53,6 +53,10 @@ impl Document {
             false
         }
     }
+
+    pub fn archive_completed_tasks(&mut self) {
+        self.tasks.retain(|_, task| !*task.complete.value());
+    }
 }
 
 impl Merge for Document {
