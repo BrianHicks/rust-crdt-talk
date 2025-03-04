@@ -5,7 +5,7 @@ mod replica;
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use replica::Replica;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use uuid::Uuid;
 
 #[derive(Debug, Parser)]
@@ -38,17 +38,7 @@ impl Cli {
     }
 
     fn load_replica(&self) -> Result<Replica> {
-        if !self.store_path.exists() {
-            return Ok(Replica::new());
-        }
-
-        let file = std::fs::File::open(&self.store_path)
-            .with_context(|| format!("could not open `{}`", self.store_path.display()))?;
-
-        let replica: Replica = serde_json::from_reader(file)
-            .with_context(|| format!("could not read `{}` as JSON", self.store_path.display()))?;
-
-        Ok(replica)
+        load_replica(&self.store_path, true)
     }
 
     fn store_replica(&self, replica: &Replica) -> Result<()> {
@@ -144,6 +134,20 @@ impl Command {
             }
         }
     }
+}
+
+fn load_replica(path: &Path, load_default: bool) -> Result<Replica> {
+    if load_default && !path.exists() {
+        return Ok(Replica::new());
+    }
+
+    let file = std::fs::File::open(path)
+        .with_context(|| format!("could not open `{}`", path.display()))?;
+
+    let replica: Replica = serde_json::from_reader(file)
+        .with_context(|| format!("could not read `{}` as JSON", path.display()))?;
+
+    Ok(replica)
 }
 
 fn main() {
