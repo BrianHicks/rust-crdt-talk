@@ -1,0 +1,8 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc a3d6b519c5040fc48faac245615c2210b800220423e235228ec938c0356140ca # shrinks to a = TwoPMap { adds: {true: Max(false)}, removes: {} }, b = TwoPMap { adds: {}, removes: {true} }
+cc f012c269b32f9f2306401b8b8856c5db537879976cd629843162a0cfe0b6f4ff # shrinks to a = TwoPMap { adds: {false: Max(false)}, removes: {} }, b = TwoPMap { adds: {true: Max(false)}, removes: {} }, c = TwoPMap { adds: {}, removes: {true} }
