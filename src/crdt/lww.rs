@@ -35,10 +35,7 @@ impl<T: Debug> LWWRegister<T> {
     }
 }
 
-impl<T: Debug> Merge for LWWRegister<T>
-where
-    T: Clone + Ord,
-{
+impl<T: Debug> Merge for LWWRegister<T> {
     fn merge_mut(&mut self, other: Self) {
         if other.clock > self.clock {
             self.set(other.value, other.clock)
