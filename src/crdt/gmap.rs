@@ -1,19 +1,12 @@
 use super::merge::Merge;
-use std::collections::{btree_map::Entry, BTreeMap};
+use std::collections::{BTreeMap, btree_map::Entry};
 use std::hash::Hash;
 
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(test, derive(proptest_derive::Arbitrary))]
-pub struct GMap<K, V>(BTreeMap<K, V>)
-where
-    K: Hash + Ord,
-    V: Merge;
+pub struct GMap<K: Hash + Ord, V: Merge>(BTreeMap<K, V>);
 
-impl<K, V> GMap<K, V>
-where
-    K: Hash + Ord,
-    V: Merge,
-{
+impl<K: Hash + Ord, V: Merge> GMap<K, V> {
     pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
         self.0.iter()
     }
@@ -36,11 +29,7 @@ where
     }
 }
 
-impl<K, V> Merge for GMap<K, V>
-where
-    K: Hash + Ord,
-    V: Merge,
-{
+impl<K: Hash + Ord, V: Merge> Merge for GMap<K, V> {
     #[tracing::instrument(name = "GMap::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, other: Self) {
         for (key, value) in other.0 {
@@ -49,11 +38,7 @@ where
     }
 }
 
-impl<K, V> Default for GMap<K, V>
-where
-    K: Hash + Ord,
-    V: Merge,
-{
+impl<K: Hash + Ord, V: Merge> Default for GMap<K, V> {
     #[tracing::instrument(name = "GMap::default")]
     fn default() -> Self {
         Self(BTreeMap::default())

@@ -1,25 +1,17 @@
 use super::Merge;
-use std::collections::{btree_map::Entry, BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, btree_map::Entry};
 use std::fmt::Debug;
 
 #[cfg(test)]
 use proptest::arbitrary::{Arbitrary, ParamsFor, StrategyFor};
 
 #[derive(Debug, PartialEq, Eq, Clone, serde::Serialize, serde::Deserialize)]
-pub struct TwoPMap<K, V>
-where
-    K: Ord + Debug + Clone,
-    V: Merge,
-{
+pub struct TwoPMap<K: Ord + Debug + Clone, V: Merge> {
     adds: BTreeMap<K, V>,
     removes: BTreeSet<K>,
 }
 
-impl<K, V> TwoPMap<K, V>
-where
-    K: Ord + Debug + Clone,
-    V: Merge,
-{
+impl<K: Ord + Debug + Clone, V: Merge> TwoPMap<K, V> {
     pub fn iter(&self) -> impl Iterator<Item = (&K, &V)> {
         self.adds.iter().filter(|(k, _)| !self.removes.contains(k))
     }
@@ -75,11 +67,7 @@ where
     }
 }
 
-impl<K, V> Merge for TwoPMap<K, V>
-where
-    K: Ord + Debug + Clone,
-    V: Merge,
-{
+impl<K: Ord + Debug + Clone, V: Merge> Merge for TwoPMap<K, V> {
     #[tracing::instrument(name = "TwoPMap::merge_mut", skip(self, other))]
     fn merge_mut(&mut self, mut other: Self) {
         self.removes.append(&mut other.removes);
@@ -91,11 +79,7 @@ where
     }
 }
 
-impl<K, V> Default for TwoPMap<K, V>
-where
-    K: Ord + Debug + Clone,
-    V: Merge,
-{
+impl<K: Ord + Debug + Clone, V: Merge> Default for TwoPMap<K, V> {
     #[tracing::instrument(name = "TwoPMap::default")]
     fn default() -> Self {
         TwoPMap {
@@ -106,11 +90,7 @@ where
 }
 
 #[cfg(test)]
-impl<K, V> Arbitrary for TwoPMap<K, V>
-where
-    K: Ord + std::fmt::Debug + Clone + Arbitrary,
-    V: Merge + std::fmt::Debug + Arbitrary,
-{
+impl<K: Ord + Debug + Clone + Arbitrary, V: Merge + Arbitrary> Arbitrary for TwoPMap<K, V> {
     type Parameters = (ParamsFor<K>, ParamsFor<V>);
 
     type Strategy =
