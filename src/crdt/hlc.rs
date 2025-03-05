@@ -56,6 +56,14 @@ impl HybridLogicalClock {
             self.counter += 1;
         }
     }
+
+    pub fn claim(&self, id: Uuid) -> HybridLogicalClock {
+        Self {
+            timestamp: self.timestamp,
+            counter: self.counter,
+            node_id: id,
+        }
+    }
 }
 
 impl Ord for HybridLogicalClock {

@@ -62,5 +62,6 @@ impl Replica {
 
     pub fn merge(&mut self, other: Replica) {
         self.document.merge_mut(other.document);
+        self.clock = self.clock.max(other.clock).claim(self.id);
     }
 }
