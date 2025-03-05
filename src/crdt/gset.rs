@@ -14,10 +14,8 @@ impl<T: Eq + Ord> GSet<T> {
 
 impl<T: Eq + Ord> Merge for GSet<T> {
     #[tracing::instrument(name = "GSet::merge_mut", skip(self, other))]
-    fn merge_mut(&mut self, other: Self) {
-        for item in other.0 {
-            self.insert(item)
-        }
+    fn merge_mut(&mut self, mut other: Self) {
+        self.0.append(&mut other.0);
     }
 }
 
