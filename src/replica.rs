@@ -60,7 +60,7 @@ impl Replica {
         self.document.archive_completed_tasks()
     }
 
-    pub fn merge(&mut self, other: Replica) {
+    pub fn receive(&mut self, other: Replica) {
         self.document.merge_mut(other.document);
         self.clock = self.clock.max(other.clock).claim(self.id);
     }

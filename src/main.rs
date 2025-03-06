@@ -143,7 +143,7 @@ impl Command {
                 let other_replica =
                     load_replica(other, false).context("could not load replica to merge")?;
 
-                replica.merge(other_replica);
+                replica.receive(other_replica);
 
                 eprintln!("Merged replicas");
 
